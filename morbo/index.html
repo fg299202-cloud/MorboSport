@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Morbo">
+<link rel="manifest" href="manifest.json">
+<title>MORBO · La agenda del día</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html { color-scheme: dark; }
+  :root {
+    --bg: #0a0a0a;
+    --bg-card: #141414;
+    --bg-card-hover: #1a1a1a;
+    --ink: #f4f1ea;
+    --ink-dim: #8a8680;
+    --ink-faint: #4a4742;
+    --accent: #e63946;
+    --accent-dim: #8a1e26;
+    --line: #2a2826;
+    --gold: #d4a942;
+  }
+  html, body { background: var(--bg); color: var(--ink); }
+  body {
+    font-family: 'Fraunces', Georgia, serif;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .masthead {
+    border-bottom: 1px solid var(--line);
+    padding: 24px 20px 18px;
+    position: relative;
+    background: linear-gradient(180deg, #0a0a0a 0%, #0d0d0d 100%);
+  }
+  .masthead::before {
+    content: "";
+    position: absolute; left: 0; right: 0; top: 0; height: 3px;
+    background: var(--accent);
+  }
+  .masthead-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px; letter-spacing: 0.04em;
+    line-height: 0.85;
+    color: var(--ink);
+  }
+  .logo .dot { color: var(--accent); }
+  .date-block {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .date-block .num { color: var(--ink); font-size: 13px; font-weight: 600; }
+  .tagline {
+    margin-top: 14px;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-dim);
+    font-weight: 400;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .tab {
+    flex: 1;
+    padding: 14px 8px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    color: var(--ink-dim);
+    background: none; border: none;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+  }
+  .tab.active { color: var(--ink); }
+  .tab.active::after {
+    content: "";
+    position: absolute; left: 50%; bottom: -1px;
+    transform: translateX(-50%);
+    width: 32px; height: 2px;
+    background: var(--accent);
+  }
+
+  /* Sections */
+  .section { display: none; padding: 0 0 80px; }
+  .section.active { display: block; }
+
+  /* Hero del día */
+  .hero {
+    padding: 28px 20px 8px;
+  }
+  .hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .hero-title {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* Event cards */
+  .events { padding: 16px 16px 0; }
+  .event {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.15s, border-color 0.2s;
+  }
+  .event:active { transform: scale(0.995); }
+  .event::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+  }
+  .event.intensity-3::before { background: var(--accent); }
+  .event.intensity-2::before { background: var(--gold); }
+  .event.intensity-1::before { background: var(--ink-faint); }
+
+  .event-head {
+    padding: 14px 16px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .event-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+  }
+  .event-meta .sport { color: var(--accent); font-weight: 600; }
+  .event-time {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+  }
+
+  .event-body { padding: 14px 16px 12px; }
+  .event-title {
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.25;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+  .event-title .vs {
+    color: var(--ink-dim);
+    font-style: italic;
+    font-weight: 400;
+    margin: 0 4px;
+  }
+  .event-reason {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink);
+    opacity: 0.92;
+  }
+  .event-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 12px;
+  }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    background: rgba(230, 57, 70, 0.08);
+    color: var(--accent);
+    border: 1px solid rgba(230, 57, 70, 0.2);
+    border-radius: 2px;
+  }
+  .tag.gold {
+    background: rgba(212, 169, 66, 0.08);
+    color: var(--gold);
+    border-color: rgba(212, 169, 66, 0.2);
+  }
+
+  /* Feedback */
+  .event-feedback {
+    display: flex;
+    border-top: 1px solid var(--line);
+    background: rgba(0,0,0,0.2);
+  }
+  .fb-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 12px;
+    color: var(--ink-dim);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .fb-btn:active { background: rgba(255,255,255,0.04); }
+  .fb-btn + .fb-btn { border-left: 1px solid var(--line); }
+  .fb-btn.active-up { color: #6ec07a; background: rgba(110, 192, 122, 0.06); }
+  .fb-btn.active-down { color: var(--accent); background: rgba(230, 57, 70, 0.06); }
+  .fb-icon { font-size: 14px; }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-dim);
+  }
+  .empty-art {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    line-height: 0.9;
+    color: var(--ink-faint);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+  .empty p { font-style: italic; font-size: 14px; }
+
+  /* Patterns section */
+  .patterns-header {
+    padding: 28px 20px 12px;
+  }
+  .patterns-header h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+  }
+  .patterns-header p {
+    font-style: italic;
+    color: var(--ink-dim);
+    font-size: 13px;
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .pattern-add {
+    margin: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .pattern-input {
+    width: 100%;
+    background: var(--bg-card) !important;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 14px;
+    color: var(--ink) !important;
+    -webkit-text-fill-color: var(--ink);
+    caret-color: var(--accent);
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    line-height: 1.4;
+    resize: vertical;
+    min-height: 80px;
+  }
+  .pattern-input:focus { color: var(--ink) !important; -webkit-text-fill-color: var(--ink); }
+  .pattern-input:focus {
+    outline: none;
+    border-color: var(--accent-dim);
+  }
+  .pattern-input::placeholder { color: var(--ink-faint); font-style: italic; }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--ink);
+    border: none;
+    padding: 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-primary:active { background: var(--accent-dim); }
+
+  .pattern-list { padding: 0 20px; }
+  .pattern {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .pattern-text {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .pattern-source {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 6px;
+    display: block;
+  }
+  .pattern-source.user { color: var(--gold); }
+  .pattern-delete {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    padding: 4px 8px;
+    font-size: 16px;
+    border-radius: 3px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .pattern-delete:active { color: var(--accent); border-color: var(--accent); }
+
+  .section-divider {
+    margin: 32px 20px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-divider::before, .section-divider::after {
+    content: ""; flex: 1; height: 1px; background: var(--line);
+  }
+
+  /* History */
+  .history-list { padding: 16px 20px 0; }
+  .history-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .history-info { flex: 1; min-width: 0; }
+  .history-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+  }
+  .history-event {
+    font-size: 14px;
+    color: var(--ink);
+    margin-top: 4px;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .history-feedback {
+    font-size: 16px;
+  }
+  .history-feedback.up { color: #6ec07a; }
+  .history-feedback.down { color: var(--accent); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 10px 18px;
+    border-radius: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Sliding feedback modal */
+  .fb-modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    z-index: 50;
+  }
+  .fb-modal-bg.show { opacity: 1; pointer-events: auto; }
+  .fb-modal {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--bg-card);
+    border-top: 1px solid var(--line);
+    border-radius: 12px 12px 0 0;
+    padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(.34,1.2,.64,1);
+    z-index: 51;
+  }
+  .fb-modal.show { transform: translateY(0); }
+  .fb-modal h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+  .fb-modal .sub {
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-dim);
+    margin-bottom: 16px;
+  }
+  .fb-modal textarea {
+    width: 100%;
+    background: var(--bg) !important;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 12px;
+    color: var(--ink) !important;
+    -webkit-text-fill-color: var(--ink);
+    caret-color: var(--accent);
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 80px;
+    margin-bottom: 14px;
+  }
+  .fb-modal textarea:focus { outline: none; border-color: var(--accent-dim); }
+
+  /* Prevent white-on-white from browser autofill / iOS Safari quirks */
+  input:-webkit-autofill,
+  textarea:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px var(--bg-card) inset !important;
+    -webkit-text-fill-color: var(--ink) !important;
+    caret-color: var(--accent);
+  }
+  ::selection { background: var(--accent); color: var(--ink); }
+
+  /* ============ GATE ============ */
+  .gate {
+    display: none;
+    min-height: 100vh; min-height: 100dvh;
+    flex-direction: column;
+    justify-content: center;
+    padding: 32px 24px;
+    position: relative;
+  }
+  .gate.show { display: flex; }
+  .gate::before {
+    content: "";
+    position: absolute; left: 0; right: 0; top: 0; height: 3px;
+    background: var(--accent);
+  }
+  .gate-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    letter-spacing: 0.04em;
+    line-height: 0.85;
+    margin-bottom: 6px;
+  }
+  .gate-logo .dot { color: var(--accent); }
+  .gate-tagline {
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-dim);
+    margin-bottom: 32px;
+  }
+  .gate-pitch {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    line-height: 1.3;
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+  .gate-pitch em { color: var(--gold); font-style: italic; font-weight: 600; }
+  .gate-sub {
+    font-size: 14px;
+    color: var(--ink-dim);
+    line-height: 1.5;
+    margin-bottom: 32px;
+  }
+  .gate-features {
+    list-style: none;
+    margin-bottom: 32px;
+    padding: 0;
+  }
+  .gate-features li {
+    padding: 10px 0;
+    font-size: 14px;
+    color: var(--ink);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .gate-features li:last-child { border-bottom: none; }
+  .gate-features .check {
+    color: var(--accent);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    line-height: 1.3;
+    flex-shrink: 0;
+  }
+  .gate-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .gate-input {
+    background: var(--bg-card) !important;
+    color: var(--ink) !important;
+    -webkit-text-fill-color: var(--ink);
+    caret-color: var(--accent);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+    width: 100%;
+  }
+  .gate-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .gate-input::placeholder {
+    color: var(--ink-faint);
+    text-transform: none;
+    letter-spacing: 0;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+  }
+  .gate-error {
+    color: var(--accent);
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-align: center;
+    min-height: 16px;
+    margin-bottom: 12px;
+  }
+  .gate-price {
+    text-align: center;
+    padding: 20px 0 0;
+    border-top: 1px solid var(--line);
+    color: var(--ink-dim);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .gate-price strong { color: var(--ink); font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.04em; }
+  .gate-price a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 1px;
+  }
+  .body-hidden { display: none !important; }
+  .fb-modal-actions { display: flex; gap: 10px; }
+  .fb-modal-actions button { flex: 1; }
+  .btn-ghost {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    padding: 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- GATE: pantalla de bienvenida + código de acceso -->
+<div class="gate" id="gate">
+  <div class="gate-logo">MORBO<span class="dot">.</span></div>
+  <div class="gate-tagline">La agenda del día de quien vive el deporte.</div>
+
+  <p class="gate-pitch">No te pierdas los <em>5 momentos</em> que de verdad importan, cada mañana.</p>
+  <p class="gate-sub">
+    Selección humana y algorítmica de los partidos, carreras y duelos del día.
+    Con el motivo de por qué importan. Sin abrir doce apps.
+  </p>
+
+  <ul class="gate-features">
+    <li><span class="check">▲</span><span>LaLiga, Champions, F1 y MotoGP. Lo que se ve en España.</span></li>
+    <li><span class="check">▲</span><span>Una notificación al día. Sin spam, sin scroll infinito.</span></li>
+    <li><span class="check">▲</span><span>Por qué el partido es interesante, en una línea.</span></li>
+  </ul>
+
+  <form class="gate-form" id="gate-form" autocomplete="off">
+    <input
+      class="gate-input"
+      type="text"
+      id="gate-code"
+      placeholder="Código de acceso"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="characters"
+      spellcheck="false">
+    <button class="btn-primary" type="submit">Entrar</button>
+  </form>
+  <div class="gate-error" id="gate-error">&nbsp;</div>
+
+  <div class="gate-price">
+    <strong>1,50€ / mes</strong><br>
+    <span>Aún no tienes código? <a href="#" id="gate-cta">Apúntate aquí</a></span>
+  </div>
+</div>
+
+<!-- APP: contenido real, oculto hasta validar código -->
+<div id="app" class="body-hidden">
+
+<header class="masthead">
+  <div class="masthead-row">
+    <div class="logo">MORBO<span class="dot">.</span></div>
+    <div class="date-block">
+      <div id="date-day">Sábado</div>
+      <div class="num" id="date-full">23 · MAY · 2026</div>
+    </div>
+  </div>
+  <div class="tagline">La agenda diaria de los momentos que importan.</div>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="hoy">Hoy</button>
+  <button class="tab" data-tab="patrones">Patrones</button>
+  <button class="tab" data-tab="historial">Historial</button>
+</nav>
+
+<!-- HOY -->
+<section class="section active" id="section-hoy">
+  <div class="hero">
+    <div class="hero-label">— Edición del día —</div>
+    <h1 class="hero-title">5 momentos con <em>morbo</em> que no te puedes perder.</h1>
+  </div>
+  <div class="events" id="events-container"></div>
+</section>
+
+<!-- PATRONES -->
+<section class="section" id="section-patrones">
+  <div class="patterns-header">
+    <h2>Definición de morbo</h2>
+    <p>Añade reglas en lenguaje natural. El motor las usará cada mañana para identificar los eventos más interesantes.</p>
+  </div>
+
+  <div class="pattern-add">
+    <textarea
+      class="pattern-input"
+      id="pattern-input"
+      placeholder="Ej: Cuando Cristiano juega contra el Real Madrid, sea el equipo que sea, eso es morbo total."></textarea>
+    <button class="btn-primary" id="add-pattern-btn">Añadir patrón</button>
+  </div>
+
+  <div class="section-divider">Mis reglas</div>
+  <div class="pattern-list" id="user-patterns"></div>
+
+  <div class="section-divider">Reglas base del sistema</div>
+  <div class="pattern-list" id="system-patterns"></div>
+</section>
+
+<!-- HISTORIAL -->
+<section class="section" id="section-historial">
+  <div class="patterns-header">
+    <h2>Historial</h2>
+    <p>Tu feedback enseña al motor qué cuenta como morbo y qué no.</p>
+  </div>
+  <div class="history-list" id="history-list"></div>
+</section>
+
+</div><!-- /app -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Feedback modal -->
+<div class="fb-modal-bg" id="fb-modal-bg"></div>
+<div class="fb-modal" id="fb-modal">
+  <h3 id="fb-modal-title">¿Qué le faltó?</h3>
+  <div class="sub" id="fb-modal-sub">Tu feedback se usará para mejorar la próxima edición.</div>
+  <textarea id="fb-modal-text" placeholder="Opcional: cuéntame qué no funcionaba o qué le faltó al motor..."></textarea>
+  <div class="fb-modal-actions">
+    <button class="btn-ghost" id="fb-modal-skip">Saltar</button>
+    <button class="btn-primary" id="fb-modal-save">Guardar</button>
+  </div>
+</div>
+
+<script>
+// ============= ACCESS CODE GATE =============
+// Lista de códigos válidos. En producción se sirve desde un endpoint protegido
+// o se reemplaza en build. Para MVP, lista estática mantenida por Fernando.
+const VALID_CODES = [
+  'MORBO-FOUNDER',  // Fernando
+  'MORBO-A7K3',     // demo / amigos
+  'MORBO-DEMO',     // demo público temporal
+  // los códigos reales de suscriptores irían aquí, generados al pagar
+];
+
+const STRIPE_LINK = 'https://buy.stripe.com/REEMPLAZAR_CON_TU_LINK_REAL';
+const ACCESS_KEY = 'morbo.access_code';
+
+function checkAccess() {
+  const stored = localStorage.getItem(ACCESS_KEY);
+  if (stored && VALID_CODES.includes(stored.toUpperCase())) {
+    showApp();
+  } else {
+    showGate();
+  }
+}
+
+function showGate() {
+  document.getElementById('gate').classList.add('show');
+  document.getElementById('app').classList.add('body-hidden');
+}
+
+function showApp() {
+  document.getElementById('gate').classList.remove('show');
+  document.getElementById('app').classList.remove('body-hidden');
+  initApp();
+}
+
+document.getElementById('gate-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const code = document.getElementById('gate-code').value.trim().toUpperCase();
+  const errorEl = document.getElementById('gate-error');
+
+  if (!code) {
+    errorEl.textContent = 'Introduce un código';
+    return;
+  }
+  if (VALID_CODES.includes(code)) {
+    localStorage.setItem(ACCESS_KEY, code);
+    errorEl.textContent = '';
+    showApp();
+  } else {
+    errorEl.textContent = 'Código no válido';
+    document.getElementById('gate-code').value = '';
+    // pequeña vibración si el dispositivo lo soporta
+    if (navigator.vibrate) navigator.vibrate(100);
+  }
+});
+
+document.getElementById('gate-cta').addEventListener('click', e => {
+  e.preventDefault();
+  window.open(STRIPE_LINK, '_blank');
+});
+
+
+// ============= DATA SOURCE =============
+// Datos por defecto: mocks. Si existe data/morbo-today.json, se sustituyen.
+let CURRENT_EVENTS = [];
+
+const MOCK_EVENTS_TODAY = [
+  {
+    id: 'evt-1',
+    sport: 'LaLiga',
+    competition: 'Jornada 38',
+    time: '21:00',
+    title: 'Elche', vs: 'Mallorca',
+    intensity: 3,
+    tags: ['Descenso', 'Última jornada'],
+    reason: 'Penúltima jornada y ambos a un punto del descenso. El que pierde, baja matemáticamente a Segunda. Hace tres años Mallorca salvó la categoría en el campo del Elche; el guion se repite.'
+  },
+  {
+    id: 'evt-2',
+    sport: 'Champions',
+    competition: 'Final',
+    time: '21:00',
+    title: 'Inter', vs: 'Manchester City',
+    intensity: 3,
+    tags: ['Final', 'Revancha'],
+    reason: 'Revancha de la final de 2023, ganada por el City en Estambul. Inzaghi vuelve con la misma idea y un Lautaro renacido. Guardiola se juega su tercera Champions con el City.'
+  },
+  {
+    id: 'evt-3',
+    sport: 'F1',
+    competition: 'GP de Mónaco',
+    time: '15:00',
+    title: 'Carrera de Mónaco',
+    intensity: 2,
+    tags: ['Circuito icónico'],
+    reason: 'El circuito donde adelantar es imposible y la pole vale oro. Verstappen sale tercero, Sainz tiene la pole por primera vez en el Principado. Si Mónaco sale a la luz tal cual, hay batalla.'
+  },
+  {
+    id: 'evt-4',
+    sport: 'LaLiga',
+    competition: 'Jornada 38',
+    time: '21:00',
+    title: 'Sevilla', vs: 'Real Madrid',
+    intensity: 2,
+    tags: ['Última liga de Modric'],
+    reason: 'Último partido de Modric vestido de blanco antes de su salida confirmada. El Madrid llega ya campeón, pero el Sánchez Pizjuán le rendirá el homenaje incómodo que suele rendir.'
+  },
+  {
+    id: 'evt-5',
+    sport: 'MotoGP',
+    competition: 'GP de Italia · Qualifying',
+    time: '14:50',
+    title: 'Clasificación Mugello',
+    intensity: 1,
+    tags: ['Casa Ducati'],
+    reason: 'Mugello es el patio de casa de Ducati y Bagnaia llega segundo del mundial. Si saca pole, la carrera del domingo cambia de color.'
+  }
+];
+
+const SYSTEM_PATTERNS = [
+  { text: 'Derbi clásico (Madrid-Barça, Sevilla-Betis, Atleti-Madrid, Athletic-Real, Espanyol-Barça).', source: 'sistema' },
+  { text: 'Dos equipos en zona de descenso enfrentándose en las últimas 8 jornadas.', source: 'sistema' },
+  { text: 'Top 3 de la tabla enfrentándose en las últimas 10 jornadas.', source: 'sistema' },
+  { text: 'Equipos peleando por la Champions (4º-6º) en cara a cara directo.', source: 'sistema' },
+  { text: 'Final o vuelta de eliminatoria con resultado ajustado.', source: 'sistema' },
+  { text: 'Última carrera del mundial de F1/MotoGP con título aún en juego.', source: 'sistema' },
+  { text: 'GP en circuito icónico: Mónaco, Spa, Silverstone, Monza, Jerez, Mugello.', source: 'sistema' },
+  { text: 'GP de casa de un piloto líder o español.', source: 'sistema' },
+  { text: 'Revancha de una final, eliminatoria o carrera reciente con polémica.', source: 'sistema' },
+  { text: 'Ex-jugador volviendo a su antiguo club, sobre todo si salió en mal tono.', source: 'sistema' },
+  { text: 'Entrenador recién destituido o estrenándose en banquillo importante.', source: 'sistema' },
+  { text: 'Récord goleador, racha de imbatibilidad o partidos consecutivos en juego.', source: 'sistema' }
+];
+
+// ============= STATE & STORAGE =============
+const KEYS = {
+  feedback: 'morbo.feedback',
+  patterns: 'morbo.user_patterns',
+  history: 'morbo.history'
+};
+
+function load(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+  catch { return fallback; }
+}
+function save(key, val) {
+  localStorage.setItem(key, JSON.stringify(val));
+}
+
+let feedback = load(KEYS.feedback, {});
+let userPatterns = load(KEYS.patterns, []);
+let history = load(KEYS.history, []);
+
+// Inicializar historial con datos mock si está vacío (para demo)
+if (history.length === 0) {
+  history = [
+    { date: '2026-05-22', event: 'Atlético - Villarreal · LaLiga', feedback: 'up' },
+    { date: '2026-05-22', event: 'Bagnaia vs Martín · Sprint Le Mans', feedback: 'up' },
+    { date: '2026-05-21', event: 'Real Sociedad - Getafe · LaLiga', feedback: 'down', note: 'Sin nada en juego, partido vacío' },
+    { date: '2026-05-20', event: 'Liverpool - Chelsea · Premier', feedback: 'up' }
+  ];
+  save(KEYS.history, history);
+}
+
+// ============= RENDER =============
+function setDate() {
+  const d = new Date();
+  const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const meses = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+  document.getElementById('date-day').textContent = dias[d.getDay()];
+  document.getElementById('date-full').textContent =
+    `${String(d.getDate()).padStart(2,'0')} · ${meses[d.getMonth()]} · ${d.getFullYear()}`;
+}
+
+function renderEvents() {
+  const c = document.getElementById('events-container');
+  if (CURRENT_EVENTS.length === 0) {
+    c.innerHTML = `<div class="empty"><div class="empty-art">00</div><p>Hoy no hay nada con morbo.<br>Disfruta del día libre.</p></div>`;
+    return;
+  }
+  c.innerHTML = CURRENT_EVENTS.map(ev => {
+    const fb = feedback[ev.id];
+    const titleHtml = ev.vs
+      ? `${ev.title} <span class="vs">vs</span> ${ev.vs}`
+      : ev.title;
+    return `
+      <article class="event intensity-${ev.intensity}" data-id="${ev.id}">
+        <div class="event-head">
+          <div class="event-meta"><span class="sport">${ev.sport}</span> · ${ev.competition}</div>
+          <div class="event-time">${ev.time}</div>
+        </div>
+        <div class="event-body">
+          <h3 class="event-title">${titleHtml}</h3>
+          <p class="event-reason">${ev.reason}</p>
+          <div class="event-tags">
+            ${ev.tags.map((t,i) => `<span class="tag ${i===0&&ev.intensity===2?'gold':''}">${t}</span>`).join('')}
+          </div>
+        </div>
+        <div class="event-feedback">
+          <button class="fb-btn ${fb==='up'?'active-up':''}" data-action="up" data-id="${ev.id}">
+            <span class="fb-icon">▲</span> Acertado
+          </button>
+          <button class="fb-btn ${fb==='down'?'active-down':''}" data-action="down" data-id="${ev.id}">
+            <span class="fb-icon">▼</span> No era morbo
+          </button>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+function renderPatterns() {
+  const userList = document.getElementById('user-patterns');
+  const sysList = document.getElementById('system-patterns');
+
+  if (userPatterns.length === 0) {
+    userList.innerHTML = `<div class="empty" style="padding:24px 0"><p>Aún no has añadido patrones propios.</p></div>`;
+  } else {
+    userList.innerHTML = userPatterns.map((p, i) => `
+      <div class="pattern">
+        <div class="pattern-text">
+          ${p.text}
+          <span class="pattern-source user">Tu regla · ${p.added}</span>
+        </div>
+        <button class="pattern-delete" data-idx="${i}">×</button>
+      </div>
+    `).join('');
+  }
+
+  sysList.innerHTML = SYSTEM_PATTERNS.map(p => `
+    <div class="pattern">
+      <div class="pattern-text">
+        ${p.text}
+        <span class="pattern-source">Regla base</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderHistory() {
+  const c = document.getElementById('history-list');
+  if (history.length === 0) {
+    c.innerHTML = `<div class="empty"><p>Aún no hay historial. Vuelve mañana.</p></div>`;
+    return;
+  }
+  c.innerHTML = history.slice().reverse().map(h => `
+    <div class="history-item">
+      <div class="history-info">
+        <div class="history-date">${h.date}</div>
+        <div class="history-event">${h.event}</div>
+      </div>
+      <div class="history-feedback ${h.feedback}">
+        ${h.feedback === 'up' ? '▲' : '▼'}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============= INTERACTIONS =============
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(`section-${tab.dataset.tab}`).classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+});
+
+// Feedback buttons
+let pendingFeedback = null;
+document.getElementById('events-container').addEventListener('click', e => {
+  const btn = e.target.closest('.fb-btn');
+  if (!btn) return;
+  const action = btn.dataset.action;
+  const id = btn.dataset.id;
+  const event = CURRENT_EVENTS.find(ev => ev.id === id);
+
+  if (feedback[id] === action) {
+    // Toggle off
+    delete feedback[id];
+    save(KEYS.feedback, feedback);
+    renderEvents();
+    showToast('Feedback retirado');
+    return;
+  }
+
+  if (action === 'down') {
+    // Pedir nota opcional
+    pendingFeedback = { id, action, event };
+    openFbModal(event);
+  } else {
+    feedback[id] = action;
+    save(KEYS.feedback, feedback);
+    addToHistory(event, action);
+    renderEvents();
+    showToast('Anotado: acertado');
+  }
+});
+
+function openFbModal(event) {
+  document.getElementById('fb-modal-text').value = '';
+  document.getElementById('fb-modal-bg').classList.add('show');
+  document.getElementById('fb-modal').classList.add('show');
+}
+function closeFbModal() {
+  document.getElementById('fb-modal-bg').classList.remove('show');
+  document.getElementById('fb-modal').classList.remove('show');
+  pendingFeedback = null;
+}
+document.getElementById('fb-modal-bg').addEventListener('click', closeFbModal);
+document.getElementById('fb-modal-skip').addEventListener('click', () => {
+  if (pendingFeedback) {
+    feedback[pendingFeedback.id] = pendingFeedback.action;
+    save(KEYS.feedback, feedback);
+    addToHistory(pendingFeedback.event, pendingFeedback.action);
+    renderEvents();
+    showToast('Anotado: no era morbo');
+  }
+  closeFbModal();
+});
+document.getElementById('fb-modal-save').addEventListener('click', () => {
+  if (pendingFeedback) {
+    const note = document.getElementById('fb-modal-text').value.trim();
+    feedback[pendingFeedback.id] = pendingFeedback.action;
+    if (note) feedback[`${pendingFeedback.id}__note`] = note;
+    save(KEYS.feedback, feedback);
+    addToHistory(pendingFeedback.event, pendingFeedback.action, note);
+    renderEvents();
+    showToast(note ? 'Lección guardada' : 'Anotado: no era morbo');
+  }
+  closeFbModal();
+});
+
+function addToHistory(event, action, note) {
+  const today = new Date().toISOString().slice(0,10);
+  const label = event.vs ? `${event.title} - ${event.vs} · ${event.sport}` : `${event.title} · ${event.sport}`;
+  // Reemplazar si ya existe entrada del mismo día y evento
+  history = history.filter(h => !(h.date === today && h.event === label));
+  history.push({ date: today, event: label, feedback: action, note: note || undefined });
+  if (history.length > 100) history = history.slice(-100);
+  save(KEYS.history, history);
+  renderHistory();
+}
+
+// Add pattern
+document.getElementById('add-pattern-btn').addEventListener('click', () => {
+  const input = document.getElementById('pattern-input');
+  const text = input.value.trim();
+  if (!text) {
+    showToast('Escribe primero el patrón');
+    return;
+  }
+  const today = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+  userPatterns.push({ text, added: today });
+  save(KEYS.patterns, userPatterns);
+  input.value = '';
+  renderPatterns();
+  showToast('Patrón añadido');
+});
+
+document.getElementById('user-patterns').addEventListener('click', e => {
+  const btn = e.target.closest('.pattern-delete');
+  if (!btn) return;
+  const idx = parseInt(btn.dataset.idx, 10);
+  userPatterns.splice(idx, 1);
+  save(KEYS.patterns, userPatterns);
+  renderPatterns();
+  showToast('Patrón eliminado');
+});
+
+// ============= APP INITIALIZATION =============
+async function loadEvents() {
+  try {
+    const res = await fetch('data/morbo-today.json', { cache: 'no-cache' });
+    if (!res.ok) throw new Error('not found');
+    const data = await res.json();
+    const events = data.matches_today || [];
+
+    // Filtrar solo los que tienen razón rellenada (los procesados por Gemini).
+    // Si ninguno tiene razón aún, mostramos los partidos con un placeholder
+    // y avisamos en consola.
+    const withReason = events.filter(e => e.reason);
+    if (withReason.length > 0) {
+      CURRENT_EVENTS = withReason;
+      console.log(`[Morbo] Cargados ${withReason.length} eventos reales del día.`);
+      return;
+    }
+    // Hay partidos pero aún sin morbo asignado: mostramos los primeros como vista previa
+    if (events.length > 0) {
+      CURRENT_EVENTS = events.slice(0, 5).map(e => ({
+        ...e,
+        intensity: 1,
+        tags: ['Pendiente de análisis'],
+        reason: 'Partido programado para hoy. El motor de morbo aún no ha procesado este día.'
+      }));
+      console.log('[Morbo] Datos cargados pero sin morbo procesado. Modo placeholder.');
+      return;
+    }
+    throw new Error('empty');
+  } catch (err) {
+    console.log('[Morbo] Usando datos mock (no se encontró morbo-today.json).');
+    CURRENT_EVENTS = MOCK_EVENTS_TODAY;
+  }
+}
+
+async function initApp() {
+  setDate();
+  await loadEvents();
+  renderEvents();
+  renderPatterns();
+  renderHistory();
+}
+
+// Init: comprobar acceso primero
+checkAccess();
+
+// Service worker registration (silencioso si no existe)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
