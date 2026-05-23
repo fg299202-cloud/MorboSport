@@ -1,0 +1,42 @@
+# ============================================
+# .gitignore para MorboSport
+# Estos archivos NUNCA se subiran a GitHub
+# ============================================
+
+# SECRETOS - CRITICO no subir
+.env
+*.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs y archivos temporales
+*.log
+*.tmp
+tmp/
+
+# Datos crudos de la API (se regeneran, ocupan espacio)
+morbo/data/matches-raw.json
+
+# NO ignorar morbo-today.json ni standings.json,
+# que son los que la PWA necesita para mostrar el morbo del dia.
