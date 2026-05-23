@@ -1,7 +1,32 @@
 {
-  "generated_at": "2026-05-23T10:32:27.643544+00:00",
+  "generated_at": "2026-05-23T10:41:12.001156+00:00",
   "date": "2026-05-23",
   "matches_today": [
+    {
+      "id": "fd-544590",
+      "sport": "LaLiga",
+      "competition": "Jornada 38",
+      "date_iso": "2026-05-23T21:00:00+00:00",
+      "time": "21:00",
+      "date_ymd": "2026-05-23",
+      "title": "Girona",
+      "vs": "Elche",
+      "status": "TIMED",
+      "intensity": 3,
+      "tags": [
+        "Descenso",
+        "LaLiga",
+        "Duelo Directo"
+      ],
+      "reason": "Es un duelo directo por la permanencia en LaLiga. Girona (18º, 40 pts) necesita ganar para tener opciones de salvación, mientras que Elche (17º, 42 pts) busca asegurar la categoría.",
+      "_meta": {
+        "home_id": 298,
+        "away_id": 285,
+        "competition_code": "PD",
+        "matchday": 38,
+        "stage": "REGULAR_SEASON"
+      }
+    },
     {
       "id": "fd-544587",
       "sport": "LaLiga",
@@ -18,58 +43,10 @@
         "Leyenda",
         "LaLiga"
       ],
-      "reason": "El Santiago Bernabéu se despide de Dani Carvajal, capitán y leyenda que cierra 23 años de trayectoria en el Real Madrid en su último partido con la camiseta blanca.",
+      "reason": "Dani Carvajal juega su último partido con el Real Madrid en el Santiago Bernabéu, poniendo fin a una etapa de 23 temporadas en el club.",
       "_meta": {
         "home_id": 86,
         "away_id": 77,
-        "competition_code": "PD",
-        "matchday": 38,
-        "stage": "REGULAR_SEASON"
-      }
-    },
-    {
-      "id": "fd-544590",
-      "sport": "LaLiga",
-      "competition": "Jornada 38",
-      "date_iso": "2026-05-23T21:00:00+00:00",
-      "time": "21:00",
-      "date_ymd": "2026-05-23",
-      "title": "Girona",
-      "vs": "Elche",
-      "status": "TIMED",
-      "intensity": 3,
-      "tags": [
-        "Descenso",
-        "LaLiga"
-      ],
-      "reason": "Duelo a vida o muerte por la permanencia: Girona (18º) necesita una victoria para salir del descenso, mientras que Elche (17º) busca asegurar su plaza en Primera División en este enfrentamiento directo.",
-      "_meta": {
-        "home_id": 298,
-        "away_id": 285,
-        "competition_code": "PD",
-        "matchday": 38,
-        "stage": "REGULAR_SEASON"
-      }
-    },
-    {
-      "id": "fd-544583",
-      "sport": "LaLiga",
-      "competition": "Jornada 38",
-      "date_iso": "2026-05-23T21:00:00+00:00",
-      "time": "21:00",
-      "date_ymd": "2026-05-23",
-      "title": "Celta",
-      "vs": "Sevilla FC",
-      "status": "TIMED",
-      "intensity": 2,
-      "tags": [
-        "Europa",
-        "LaLiga"
-      ],
-      "reason": "El Celta (6º) se juega la clasificación directa para la Conference League en casa, bajo la presión de Getafe y Rayo Vallecano que acechan su puesto europeo.",
-      "_meta": {
-        "home_id": 558,
-        "away_id": 559,
         "competition_code": "PD",
         "matchday": 38,
         "stage": "REGULAR_SEASON"
@@ -90,10 +67,59 @@
         "Descenso",
         "LaLiga"
       ],
-      "reason": "El Mallorca (19º) busca una victoria que le dé esperanzas de permanencia en Primera, aunque su salvación dependerá de los resultados de sus rivales directos en la última jornada.",
+      "reason": "El Mallorca (19º, 39 pts), en puestos de descenso, necesita una victoria contra el ya descendido Real Oviedo y esperar otros resultados para lograr la permanencia en LaLiga.",
       "_meta": {
         "home_id": 89,
         "away_id": 1048,
+        "competition_code": "PD",
+        "matchday": 38,
+        "stage": "REGULAR_SEASON"
+      }
+    },
+    {
+      "id": "fd-544584",
+      "sport": "LaLiga",
+      "competition": "Jornada 38",
+      "date_iso": "2026-05-23T21:00:00+00:00",
+      "time": "21:00",
+      "date_ymd": "2026-05-23",
+      "title": "Espanyol",
+      "vs": "Real Sociedad",
+      "status": "TIMED",
+      "intensity": 2,
+      "tags": [
+        "Europa",
+        "LaLiga"
+      ],
+      "reason": "El Espanyol (11º, 45 pts) aún tiene una remota opción de meterse en la Conference League si gana a la Real Sociedad y se dan otros resultados.",
+      "_meta": {
+        "home_id": 80,
+        "away_id": 92,
+        "competition_code": "PD",
+        "matchday": 38,
+        "stage": "REGULAR_SEASON"
+      }
+    },
+    {
+      "id": "fd-544589",
+      "sport": "LaLiga",
+      "competition": "Jornada 38",
+      "date_iso": "2026-05-23T21:00:00+00:00",
+      "time": "21:00",
+      "date_ymd": "2026-05-23",
+      "title": "Valencia",
+      "vs": "Barça",
+      "status": "TIMED",
+      "intensity": 2,
+      "tags": [
+        "Despedida",
+        "Europa",
+        "LaLiga"
+      ],
+      "reason": "Robert Lewandowski se despide del FC Barcelona en Mestalla, en un partido donde el Valencia (9º, 46 pts) aún sueña con un billete para la Conference League.",
+      "_meta": {
+        "home_id": 95,
+        "away_id": 81,
         "competition_code": "PD",
         "matchday": 38,
         "stage": "REGULAR_SEASON"
@@ -144,21 +170,21 @@
       }
     },
     {
-      "id": "fd-544587",
+      "id": "fd-544581",
       "sport": "LaLiga",
       "competition": "Jornada 38",
       "date_iso": "2026-05-23T21:00:00+00:00",
       "time": "21:00",
       "date_ymd": "2026-05-23",
-      "title": "Real Madrid",
-      "vs": "Athletic",
+      "title": "Alavés",
+      "vs": "Rayo Vallecano",
       "status": "TIMED",
       "intensity": null,
       "tags": [],
       "reason": null,
       "_meta": {
-        "home_id": 86,
-        "away_id": 77,
+        "home_id": 263,
+        "away_id": 87,
         "competition_code": "PD",
         "matchday": 38,
         "stage": "REGULAR_SEASON"
@@ -186,27 +212,6 @@
       }
     },
     {
-      "id": "fd-544589",
-      "sport": "LaLiga",
-      "competition": "Jornada 38",
-      "date_iso": "2026-05-23T21:00:00+00:00",
-      "time": "21:00",
-      "date_ymd": "2026-05-23",
-      "title": "Valencia",
-      "vs": "Barça",
-      "status": "TIMED",
-      "intensity": null,
-      "tags": [],
-      "reason": null,
-      "_meta": {
-        "home_id": 95,
-        "away_id": 81,
-        "competition_code": "PD",
-        "matchday": 38,
-        "stage": "REGULAR_SEASON"
-      }
-    },
-    {
       "id": "fd-544585",
       "sport": "LaLiga",
       "competition": "Jornada 38",
@@ -228,21 +233,42 @@
       }
     },
     {
-      "id": "fd-544581",
+      "id": "fd-544586",
       "sport": "LaLiga",
       "competition": "Jornada 38",
       "date_iso": "2026-05-23T21:00:00+00:00",
       "time": "21:00",
       "date_ymd": "2026-05-23",
-      "title": "Alavés",
-      "vs": "Rayo Vallecano",
+      "title": "Mallorca",
+      "vs": "Real Oviedo",
       "status": "TIMED",
       "intensity": null,
       "tags": [],
       "reason": null,
       "_meta": {
-        "home_id": 263,
-        "away_id": 87,
+        "home_id": 89,
+        "away_id": 1048,
+        "competition_code": "PD",
+        "matchday": 38,
+        "stage": "REGULAR_SEASON"
+      }
+    },
+    {
+      "id": "fd-544590",
+      "sport": "LaLiga",
+      "competition": "Jornada 38",
+      "date_iso": "2026-05-23T21:00:00+00:00",
+      "time": "21:00",
+      "date_ymd": "2026-05-23",
+      "title": "Girona",
+      "vs": "Elche",
+      "status": "TIMED",
+      "intensity": null,
+      "tags": [],
+      "reason": null,
+      "_meta": {
+        "home_id": 298,
+        "away_id": 285,
         "competition_code": "PD",
         "matchday": 38,
         "stage": "REGULAR_SEASON"
@@ -291,42 +317,42 @@
       }
     },
     {
-      "id": "fd-544590",
+      "id": "fd-544587",
       "sport": "LaLiga",
       "competition": "Jornada 38",
       "date_iso": "2026-05-23T21:00:00+00:00",
       "time": "21:00",
       "date_ymd": "2026-05-23",
-      "title": "Girona",
-      "vs": "Elche",
+      "title": "Real Madrid",
+      "vs": "Athletic",
       "status": "TIMED",
       "intensity": null,
       "tags": [],
       "reason": null,
       "_meta": {
-        "home_id": 298,
-        "away_id": 285,
+        "home_id": 86,
+        "away_id": 77,
         "competition_code": "PD",
         "matchday": 38,
         "stage": "REGULAR_SEASON"
       }
     },
     {
-      "id": "fd-544586",
+      "id": "fd-544589",
       "sport": "LaLiga",
       "competition": "Jornada 38",
       "date_iso": "2026-05-23T21:00:00+00:00",
       "time": "21:00",
       "date_ymd": "2026-05-23",
-      "title": "Mallorca",
-      "vs": "Real Oviedo",
+      "title": "Valencia",
+      "vs": "Barça",
       "status": "TIMED",
       "intensity": null,
       "tags": [],
       "reason": null,
       "_meta": {
-        "home_id": 89,
-        "away_id": 1048,
+        "home_id": 95,
+        "away_id": 81,
         "competition_code": "PD",
         "matchday": 38,
         "stage": "REGULAR_SEASON"
@@ -369,27 +395,6 @@
       "_meta": {
         "home_id": 397,
         "away_id": 66,
-        "competition_code": "PL",
-        "matchday": 38,
-        "stage": "REGULAR_SEASON"
-      }
-    },
-    {
-      "id": "fd-538162",
-      "sport": "Premier",
-      "competition": "Jornada 38",
-      "date_iso": "2026-05-24T17:00:00+00:00",
-      "time": "17:00",
-      "date_ymd": "2026-05-24",
-      "title": "Nottingham",
-      "vs": "Bournemouth",
-      "status": "TIMED",
-      "intensity": null,
-      "tags": [],
-      "reason": null,
-      "_meta": {
-        "home_id": 351,
-        "away_id": 1044,
         "competition_code": "PL",
         "matchday": 38,
         "stage": "REGULAR_SEASON"
@@ -459,21 +464,42 @@
       }
     },
     {
-      "id": "fd-538161",
+      "id": "fd-538162",
       "sport": "Premier",
       "competition": "Jornada 38",
       "date_iso": "2026-05-24T17:00:00+00:00",
       "time": "17:00",
       "date_ymd": "2026-05-24",
-      "title": "Man City",
-      "vs": "Aston Villa",
+      "title": "Nottingham",
+      "vs": "Bournemouth",
       "status": "TIMED",
       "intensity": null,
       "tags": [],
       "reason": null,
       "_meta": {
-        "home_id": 65,
-        "away_id": 58,
+        "home_id": 351,
+        "away_id": 1044,
+        "competition_code": "PL",
+        "matchday": 38,
+        "stage": "REGULAR_SEASON"
+      }
+    },
+    {
+      "id": "fd-538155",
+      "sport": "Premier",
+      "competition": "Jornada 38",
+      "date_iso": "2026-05-24T17:00:00+00:00",
+      "time": "17:00",
+      "date_ymd": "2026-05-24",
+      "title": "Sunderland",
+      "vs": "Chelsea",
+      "status": "TIMED",
+      "intensity": null,
+      "tags": [],
+      "reason": null,
+      "_meta": {
+        "home_id": 71,
+        "away_id": 61,
         "competition_code": "PL",
         "matchday": 38,
         "stage": "REGULAR_SEASON"
@@ -501,27 +527,6 @@
       }
     },
     {
-      "id": "fd-538163",
-      "sport": "Premier",
-      "competition": "Jornada 38",
-      "date_iso": "2026-05-24T17:00:00+00:00",
-      "time": "17:00",
-      "date_ymd": "2026-05-24",
-      "title": "Tottenham",
-      "vs": "Everton",
-      "status": "TIMED",
-      "intensity": null,
-      "tags": [],
-      "reason": null,
-      "_meta": {
-        "home_id": 73,
-        "away_id": 62,
-        "competition_code": "PL",
-        "matchday": 38,
-        "stage": "REGULAR_SEASON"
-      }
-    },
-    {
       "id": "fd-538159",
       "sport": "Premier",
       "competition": "Jornada 38",
@@ -543,21 +548,42 @@
       }
     },
     {
-      "id": "fd-538155",
+      "id": "fd-538161",
       "sport": "Premier",
       "competition": "Jornada 38",
       "date_iso": "2026-05-24T17:00:00+00:00",
       "time": "17:00",
       "date_ymd": "2026-05-24",
-      "title": "Sunderland",
-      "vs": "Chelsea",
+      "title": "Man City",
+      "vs": "Aston Villa",
       "status": "TIMED",
       "intensity": null,
       "tags": [],
       "reason": null,
       "_meta": {
-        "home_id": 71,
-        "away_id": 61,
+        "home_id": 65,
+        "away_id": 58,
+        "competition_code": "PL",
+        "matchday": 38,
+        "stage": "REGULAR_SEASON"
+      }
+    },
+    {
+      "id": "fd-538163",
+      "sport": "Premier",
+      "competition": "Jornada 38",
+      "date_iso": "2026-05-24T17:00:00+00:00",
+      "time": "17:00",
+      "date_ymd": "2026-05-24",
+      "title": "Tottenham",
+      "vs": "Everton",
+      "status": "TIMED",
+      "intensity": null,
+      "tags": [],
+      "reason": null,
+      "_meta": {
+        "home_id": 73,
+        "away_id": 62,
         "competition_code": "PL",
         "matchday": 38,
         "stage": "REGULAR_SEASON"
@@ -648,27 +674,6 @@
       }
     },
     {
-      "id": "fd-537193",
-      "sport": "Serie A",
-      "competition": "Jornada 38",
-      "date_iso": "2026-05-24T20:45:00+00:00",
-      "time": "20:45",
-      "date_ymd": "2026-05-24",
-      "title": "Cremonese",
-      "vs": "Como 1907",
-      "status": "TIMED",
-      "intensity": null,
-      "tags": [],
-      "reason": null,
-      "_meta": {
-        "home_id": 457,
-        "away_id": 7397,
-        "competition_code": "SA",
-        "matchday": 38,
-        "stage": "REGULAR_SEASON"
-      }
-    },
-    {
       "id": "fd-537189",
       "sport": "Serie A",
       "competition": "Jornada 38",
@@ -684,6 +689,27 @@
       "_meta": {
         "home_id": 450,
         "away_id": 100,
+        "competition_code": "SA",
+        "matchday": 38,
+        "stage": "REGULAR_SEASON"
+      }
+    },
+    {
+      "id": "fd-537193",
+      "sport": "Serie A",
+      "competition": "Jornada 38",
+      "date_iso": "2026-05-24T20:45:00+00:00",
+      "time": "20:45",
+      "date_ymd": "2026-05-24",
+      "title": "Cremonese",
+      "vs": "Como 1907",
+      "status": "TIMED",
+      "intensity": null,
+      "tags": [],
+      "reason": null,
+      "_meta": {
+        "home_id": 457,
+        "away_id": 7397,
         "competition_code": "SA",
         "matchday": 38,
         "stage": "REGULAR_SEASON"
@@ -711,13 +737,12 @@
       }
     }
   ],
-  "generated_morbo_at": "2026-05-23T10:33:09.490117",
+  "generated_morbo_at": "2026-05-23T10:41:34.774110",
   "search_queries_used": [
-    "última jornada LaLiga 2025-2026",
-    "lucha por Europa LaLiga 2025-2026 jornada 38",
-    "descenso LaLiga 2025-2026 jornada 38",
-    "despedidas Real Madrid 2026",
-    "despedidas Barcelona 2026",
-    "noticias Serie A última jornada 2026"
+    "LaLiga jornada 38 2025-2026 descenso",
+    "LaLiga jornada 38 2025-2026 puestos europeos",
+    "Real Madrid Athletic 2026 despedidas",
+    "Valencia Barça 2026 despedidas",
+    "Serie A jornada 38 2025-2026"
   ]
 }
