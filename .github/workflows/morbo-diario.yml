@@ -10,6 +10,9 @@
 
 name: Morbo del dia
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   # CRON: 06:00 UTC = 08:00 Madrid (en horario verano)
   #                 = 07:00 Madrid (en horario invierno)
