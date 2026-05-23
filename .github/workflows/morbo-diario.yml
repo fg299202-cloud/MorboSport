@@ -1,0 +1,85 @@
+# ============================================
+#   MORBO - Workflow diario automatico
+# ============================================
+# Cada dia a las 08:00 hora Madrid:
+#   1. Descarga partidos y clasificaciones
+#   2. Genera el morbo del dia con Gemini
+#   3. Si hay cambios, los commitea y pushea
+#   4. Netlify redespliega solo al detectar el push
+# ============================================
+
+name: Morbo del dia
+
+on:
+  # CRON: 06:00 UTC = 08:00 Madrid (en horario verano)
+  #                 = 07:00 Madrid (en horario invierno)
+  # Para que sea siempre 08:00 Madrid disparamos a las 06:00 UTC
+  # cuando es horario de verano y a las 07:00 cuando es invierno.
+  # GitHub Actions solo permite UTC, asi que ejecutamos a las dos horas
+  # y el script decide si toca o no segun la zona horaria de Madrid.
+  schedule:
+    - cron: '0 6 * * *'   # 06:00 UTC (8:00 Madrid en verano)
+    - cron: '0 7 * * *'   # 07:00 UTC (8:00 Madrid en invierno)
+
+  # Permite lanzarlo a mano desde la pestaña Actions de GitHub
+  workflow_dispatch:
+
+jobs:
+  generar-morbo:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write   # necesario para que el bot pueda hacer commit y push
+
+    steps:
+      - name: Comprobar que toca ejecutar (hora Madrid = 8)
+        id: check_hour
+        run: |
+          HORA_MADRID=$(TZ='Europe/Madrid' date +%H)
+          echo "Hora actual en Madrid: $HORA_MADRID"
+          if [ "$HORA_MADRID" = "08" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "ejecutar=true" >> $GITHUB_OUTPUT
+          else
+            echo "ejecutar=false" >> $GITHUB_OUTPUT
+            echo "No son las 8:00 en Madrid, saltamos esta ejecucion."
+          fi
+
+      - name: Descargar codigo del repo
+        if: steps.check_hour.outputs.ejecutar == 'true'
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        if: steps.check_hour.outputs.ejecutar == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependencias
+        if: steps.check_hour.outputs.ejecutar == 'true'
+        run: pip install requests
+
+      - name: Descargar partidos y clasificaciones
+        if: steps.check_hour.outputs.ejecutar == 'true'
+        env:
+          FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
+        run: python fetch_matches.py
+
+      - name: Generar morbo con Gemini
+        if: steps.check_hour.outputs.ejecutar == 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python generate_morbo.py
+
+      - name: Commit y push si hay cambios
+        if: steps.check_hour.outputs.ejecutar == 'true'
+        run: |
+          git config user.name "Morbo Bot"
+          git config user.email "bot@morbo.app"
+          git add morbo/data/
+          if git diff --cached --quiet; then
+            echo "Sin cambios, no commiteamos."
+          else
+            git commit -m "Morbo automatico $(TZ='Europe/Madrid' date +'%Y-%m-%d %H:%M')"
+            git push
+            echo "Commit hecho y subido. Netlify redesplegara solo."
+          fi
