@@ -360,6 +360,49 @@
   }
   .pattern-delete:active { color: var(--accent); border-color: var(--accent); }
 
+  .export-panel {
+    margin: 18px 20px 8px;
+    background: linear-gradient(135deg, rgba(212, 169, 66, 0.08), rgba(212, 169, 66, 0.02));
+    border: 1px solid rgba(212, 169, 66, 0.25);
+    border-radius: 4px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .export-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .export-text strong {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.06em;
+    color: var(--gold);
+  }
+  .export-text span {
+    font-size: 12px;
+    color: var(--ink-dim);
+    line-height: 1.5;
+    font-style: italic;
+  }
+  .export-text code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink);
+    background: rgba(0,0,0,0.3);
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-style: normal;
+  }
+  .export-btn {
+    background: var(--gold) !important;
+    color: #1a1610 !important;
+    font-weight: 600;
+  }
+  .export-btn:active { background: #b8902f !important; }
+
   .section-divider {
     margin: 32px 20px 12px;
     font-family: 'JetBrains Mono', monospace;
@@ -710,6 +753,15 @@
   <div class="section-divider">Mis reglas</div>
   <div class="pattern-list" id="user-patterns"></div>
 
+  <!-- Panel de exportación: solo aparece si hay patrones del usuario -->
+  <div class="export-panel" id="export-panel" style="display:none;">
+    <div class="export-text">
+      <strong>Sincronizar con el motor</strong>
+      <span>Descarga este archivo y reemplaza <code>morbo/data/patterns.json</code> en tu PC. Gemini los usará en la próxima generación.</span>
+    </div>
+    <button class="btn-primary export-btn" id="export-patterns-btn">↓ Exportar patrones</button>
+  </div>
+
   <div class="section-divider">Reglas base del sistema</div>
   <div class="pattern-list" id="system-patterns"></div>
 </section>
@@ -742,25 +794,54 @@
 
 <script>
 // ============= ACCESS CODE GATE =============
-// Lista de códigos válidos. En producción se sirve desde un endpoint protegido
-// o se reemplaza en build. Para MVP, lista estática mantenida por Fernando.
-const VALID_CODES = [
-  'MORBO-FOUNDER',  // Fernando
-  'MORBO-A7K3',     // demo / amigos
-  'MORBO-DEMO',     // demo público temporal
-  // los códigos reales de suscriptores irían aquí, generados al pagar
+// Hay dos tipos de usuario:
+//   - EDITOR: ve todas las pestañas (Hoy, Patrones, Historial).
+//             Solo Fernando. Puede crear/editar patrones que afectan a
+//             la generación diaria del morbo.
+//   - READER: ve solo Hoy e Historial. Consume el morbo pero no lo edita.
+//             Son tus amigos y futuros suscriptores.
+//
+// Para añadir un nuevo amigo / suscriptor: añade su código en READER_CODES.
+// Para revocar acceso: borra el código de la lista correspondiente.
+
+const EDITOR_CODES = [
+  'MORBO-FOUNDER',   // Fernando
 ];
+
+const READER_CODES = [
+  'MORBO-A7K3',      // demo / amigos
+  'MORBO-DEMO',      // demo público temporal
+  // 'MORBO-ALEJANDRO',
+  // 'MORBO-DARIEL',
+  // los códigos de suscriptores irían aquí
+];
+
+const VALID_CODES = [...EDITOR_CODES, ...READER_CODES];
 
 const STRIPE_LINK = 'https://buy.stripe.com/REEMPLAZAR_CON_TU_LINK_REAL';
 const ACCESS_KEY = 'morbo.access_code';
 
+// Estado del rol del usuario actual (se rellena en checkAccess)
+let USER_ROLE = 'reader'; // 'editor' | 'reader'
+
+function getRoleForCode(code) {
+  const upper = code.toUpperCase();
+  if (EDITOR_CODES.includes(upper)) return 'editor';
+  if (READER_CODES.includes(upper)) return 'reader';
+  return null;
+}
+
 function checkAccess() {
   const stored = localStorage.getItem(ACCESS_KEY);
-  if (stored && VALID_CODES.includes(stored.toUpperCase())) {
-    showApp();
-  } else {
-    showGate();
+  if (stored) {
+    const role = getRoleForCode(stored);
+    if (role) {
+      USER_ROLE = role;
+      showApp();
+      return;
+    }
   }
+  showGate();
 }
 
 function showGate() {
@@ -771,7 +852,20 @@ function showGate() {
 function showApp() {
   document.getElementById('gate').classList.remove('show');
   document.getElementById('app').classList.remove('body-hidden');
+  applyRoleVisibility();
   initApp();
+}
+
+function applyRoleVisibility() {
+  // Pestaña Patrones y su sección solo visibles para editor
+  const patternsTab = document.querySelector('[data-tab="patrones"]');
+  const patternsSection = document.getElementById('section-patrones');
+  if (USER_ROLE !== 'editor') {
+    if (patternsTab) patternsTab.style.display = 'none';
+    if (patternsSection) patternsSection.style.display = 'none';
+  } else {
+    if (patternsTab) patternsTab.style.display = '';
+  }
 }
 
 document.getElementById('gate-form').addEventListener('submit', e => {
@@ -783,14 +877,15 @@ document.getElementById('gate-form').addEventListener('submit', e => {
     errorEl.textContent = 'Introduce un código';
     return;
   }
-  if (VALID_CODES.includes(code)) {
+  const role = getRoleForCode(code);
+  if (role) {
+    USER_ROLE = role;
     localStorage.setItem(ACCESS_KEY, code);
     errorEl.textContent = '';
     showApp();
   } else {
     errorEl.textContent = 'Código no válido';
     document.getElementById('gate-code').value = '';
-    // pequeña vibración si el dispositivo lo soporta
     if (navigator.vibrate) navigator.vibrate(100);
   }
 });
@@ -953,9 +1048,11 @@ function renderEvents() {
 function renderPatterns() {
   const userList = document.getElementById('user-patterns');
   const sysList = document.getElementById('system-patterns');
+  const exportPanel = document.getElementById('export-panel');
 
   if (userPatterns.length === 0) {
     userList.innerHTML = `<div class="empty" style="padding:24px 0"><p>Aún no has añadido patrones propios.</p></div>`;
+    if (exportPanel) exportPanel.style.display = 'none';
   } else {
     userList.innerHTML = userPatterns.map((p, i) => `
       <div class="pattern">
@@ -966,6 +1063,7 @@ function renderPatterns() {
         <button class="pattern-delete" data-idx="${i}">×</button>
       </div>
     `).join('');
+    if (exportPanel) exportPanel.style.display = 'flex';
   }
 
   sysList.innerHTML = SYSTEM_PATTERNS.map(p => `
@@ -976,6 +1074,25 @@ function renderPatterns() {
       </div>
     </div>
   `).join('');
+}
+
+function exportPatterns() {
+  // Genera un archivo patterns.json compatible con generate_morbo.py
+  // El script espera una lista de strings (los textos) o de objetos con .text
+  const payload = userPatterns.map(p => p.text);
+  const json = JSON.stringify(payload, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'patterns.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast('Descargado: patterns.json');
 }
 
 function renderHistory() {
@@ -1118,6 +1235,9 @@ document.getElementById('user-patterns').addEventListener('click', e => {
   renderPatterns();
   showToast('Patrón eliminado');
 });
+
+// Export patterns
+document.getElementById('export-patterns-btn').addEventListener('click', exportPatterns);
 
 // ============= APP INITIALIZATION =============
 async function loadEvents() {

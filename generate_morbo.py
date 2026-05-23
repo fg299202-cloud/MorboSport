@@ -66,12 +66,22 @@ DEFAULT_PATTERNS = [
 
 
 def load_patterns():
+    """Carga patrones del usuario. Acepta dos formatos:
+       - Lista de strings: ["regla 1", "regla 2"]   (formato exportado por la PWA)
+       - Lista de objetos: [{"text": "regla 1"}, ...]
+    """
     user_patterns = []
     if PATTERNS_FILE.exists():
         try:
-            user_patterns = json.loads(PATTERNS_FILE.read_text())
-        except Exception:
-            pass
+            raw = json.loads(PATTERNS_FILE.read_text(encoding="utf-8"))
+            if isinstance(raw, list):
+                for item in raw:
+                    if isinstance(item, str):
+                        user_patterns.append(item.strip())
+                    elif isinstance(item, dict) and item.get("text"):
+                        user_patterns.append(item["text"].strip())
+        except Exception as e:
+            print(f"AVISO: no se pudo leer patterns.json ({e})")
     return DEFAULT_PATTERNS, user_patterns
 
 
