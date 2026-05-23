@@ -193,18 +193,26 @@ Hoy es {today}.
    - Cualquier noticia de hoy o ayer que de morbo a un partido concreto
    Las clasificaciones de arriba son fiables, pero TODO el contexto narrativo lo tienes que buscar.
 
-2. NO INVENTES. Si no encuentras un dato concreto sobre un partido, no lo digas. Prohibido escribir "podria jugarse el titulo", "probable revancha", "se rumorea que..." Solo afirma cosas que hayas verificado con la busqueda o que esten en las clasificaciones.
+2. BUSCA TAMBIEN EN GOOGLE si HOY hay eventos de estos deportes (no tengo API de ellos):
+   - Formula 1: clasificacion, sprint, carrera, libres importantes
+   - MotoGP: clasificacion, sprint, carrera
+   - NBA: playoffs o finales (la temporada regular ya esta cubierta por otra API)
+   Si encuentras eventos confirmados para HOY, anadelos a la seleccion final con un ID inventado tipo "f1-monaco", "motogp-mugello", "nba-finals-g3", la hora real (en horario espanol), y el motivo verificado. Si no hay ninguno confirmado, no inventes.
 
-3. PROHIBIDO el lenguaje vacio: nada de "sera un buen partido", "promete emocion", "tension hasta el ultimo minuto", "encuentro vibrante". Eso no es morbo, es relleno.
+3. NO INVENTES. Si no encuentras un dato concreto sobre un partido, no lo digas. Prohibido escribir "podria jugarse el titulo", "probable revancha", "se rumorea que..." Solo afirma cosas que hayas verificado con la busqueda o que esten en las clasificaciones.
 
-4. Selecciona entre 3 y 5 partidos con verdadero morbo. NO rellenes por rellenar: si solo hay 3 con sustancia, devuelve 3. Mejor 3 buenos que 5 mediocres.
+4. PROHIBIDO el lenguaje vacio: nada de "sera un buen partido", "promete emocion", "tension hasta el ultimo minuto", "encuentro vibrante". Eso no es morbo, es relleno.
 
-5. Para cada uno asigna:
+5. Selecciona entre 3 y 5 eventos con verdadero morbo (mezcla futbol + F1 + MotoGP + NBA segun toque). NO rellenes por rellenar: si solo hay 3 con sustancia, devuelve 3. Mejor 3 buenos que 5 mediocres.
+
+6. Para cada uno asigna:
    - intensity: 3 = imperdible, 2 = atractivo, 1 = curioso
-   - tags: 1-3 etiquetas cortas (ej: "Descenso", "Derbi", "Despedida")
-   - reason: 1-2 frases CONCRETAS y verificables. Menciona el dato exacto (posicion en tabla, jornadas que quedan, gol numero X, etc.) Tono editorial, periodistico.
+   - tags: 1-3 etiquetas cortas (ej: "Descenso", "Derbi", "Despedida", "Final NBA")
+   - reason: 1-2 frases CONCRETAS y verificables. Menciona el dato exacto (posicion en tabla, jornadas que quedan, gol numero X, vuelta del campeonato, etc.) Tono editorial, periodistico.
 
-6. RESPONDE SOLO CON JSON VALIDO, sin texto adicional, sin markdown, sin triple backtick. Formato exacto:
+7. Para eventos NUEVOS (F1, MotoGP, NBA que has anadido tu via busqueda), incluye estos campos adicionales en el objeto: "sport" (ej. "F1", "MotoGP", "NBA"), "competition" (ej. "GP Monaco", "Finals G3"), "time" (hora espanola en formato HH:MM), "title" (nombre del evento, ej. "GP de Monaco" o "Boston - OKC"). Sin campo "vs" si es carrera, con "vs" si es partido.
+
+8. RESPONDE SOLO CON JSON VALIDO, sin texto adicional, sin markdown, sin triple backtick. Formato exacto:
 
 {{
   "selected": [
@@ -310,24 +318,44 @@ def main():
         print("\nGemini no ha seleccionado ningun partido.")
         return
 
-    print(f"\n-> Gemini ha seleccionado {len(selected)} partidos con morbo:\n")
+    print(f"\n-> Gemini ha seleccionado {len(selected)} eventos con morbo:\n")
 
-    selected_by_id = {s["id"]: s for s in selected}
+    # IDs de los partidos que vinieron de la API de futbol
+    fb_ids = {m["id"] for m in matches_today}
+
     enriched_matches = []
-    for m in matches_today:
-        if m["id"] in selected_by_id:
-            s = selected_by_id[m["id"]]
+    for s in selected:
+        sid = s.get("id", "")
+        if sid in fb_ids:
+            # Es un partido de futbol que ya teniamos: lo enriquecemos
+            m = next(x for x in matches_today if x["id"] == sid)
             m["intensity"] = s.get("intensity", 1)
             m["tags"] = s.get("tags", [])
             m["reason"] = s.get("reason", "")
             enriched_matches.append(m)
+        else:
+            # Es un evento NUEVO (F1, MotoGP, NBA via busqueda de Gemini)
+            new_event = {
+                "id": sid or f"extra-{len(enriched_matches)}",
+                "sport": s.get("sport", "Otros"),
+                "competition": s.get("competition", ""),
+                "time": s.get("time", "--:--"),
+                "title": s.get("title", "Evento"),
+                "vs": s.get("vs"),  # puede ser None para carreras
+                "intensity": s.get("intensity", 1),
+                "tags": s.get("tags", []),
+                "reason": s.get("reason", ""),
+                "_meta": {"source": "gemini_search"},
+            }
+            enriched_matches.append(new_event)
 
-    enriched_matches.sort(key=lambda m: (-m.get("intensity", 0), m["time"]))
+    enriched_matches.sort(key=lambda m: (-m.get("intensity", 0), m.get("time", "99:99")))
 
     for m in enriched_matches:
         intensity_marker = "X" * m["intensity"]
-        tags = " · ".join(m["tags"])
-        print(f"  [{intensity_marker:3s}] {m['time']}  {m['title']} vs {m['vs']}  [{tags}]")
+        tags = " · ".join(m.get("tags", []))
+        title_full = f"{m['title']} vs {m['vs']}" if m.get("vs") else m["title"]
+        print(f"  [{intensity_marker:3s}] {m.get('time','--:--')}  {title_full}  [{tags}]")
         print(f"        > {m['reason']}\n")
 
     data["matches_today"] = enriched_matches

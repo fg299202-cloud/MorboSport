@@ -60,6 +60,8 @@ COMPETITIONS = {
     "PL": "Premier",
     "BL1": "Bundesliga",
     "SA": "Serie A",
+    "FL1": "Ligue 1",
+    "PPL": "Liga Portuguesa",
 }
 
 OUT_DIR = Path(__file__).parent / "morbo" / "data"

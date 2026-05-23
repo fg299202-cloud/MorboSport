@@ -10,9 +10,6 @@
 
 name: Morbo del dia
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 on:
   # CRON: 06:00 UTC = 08:00 Madrid (en horario verano)
   #                 = 07:00 Madrid (en horario invierno)
@@ -66,6 +63,13 @@ jobs:
         env:
           FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
         run: python fetch_matches.py
+
+      - name: Anadir partidos NBA
+        if: steps.check_hour.outputs.ejecutar == 'true'
+        env:
+          BALLDONTLIE_API_KEY: ${{ secrets.BALLDONTLIE_API_KEY }}
+        run: python fetch_nba.py
+        continue-on-error: true   # si NBA falla, seguimos sin ella
 
       - name: Generar morbo con Gemini
         if: steps.check_hour.outputs.ejecutar == 'true'
